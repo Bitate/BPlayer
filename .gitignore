@@ -1,4 +1,10 @@
+# For build output
 build
+out
+
+# For IDEs
 .vscode
 .vs
+
+# For third-party libraries
 googletest

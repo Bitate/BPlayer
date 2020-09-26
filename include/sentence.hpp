@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <initializer_list>
 
 namespace BPlayer
 {
@@ -16,6 +17,9 @@ namespace BPlayer
 
         sentence(sentence&&) noexcept;
         sentence& operator=(sentence&&) noexcept;
+
+    public:
+        
 
     private:
         std::vector< std::string > originial_sentence;

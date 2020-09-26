@@ -6,6 +6,5 @@
 
 TEST(sentence_tests, split_sentence_to_single_word)
 {
-    std::initializer_list< std::string > input_sentence = { "I", "am", "Tom" };
-
+    BPlayer::sentence sentence;
 }

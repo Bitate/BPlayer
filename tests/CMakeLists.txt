@@ -5,4 +5,5 @@ add_executable(sentence_test
 )
 target_link_libraries(sentence_test
     gtest_main
+    BPlayer
 )

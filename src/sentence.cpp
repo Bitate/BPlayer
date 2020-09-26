@@ -4,7 +4,7 @@ namespace BPlayer
 {
     sentence::sentence()
     {
-
+        
     }
     sentence::~sentence()
     {
@@ -30,5 +30,6 @@ namespace BPlayer
         
     }
     
+
 
 }
