@@ -24,8 +24,7 @@ namespace BPlayer
         sentence& operator=(sentence&&) noexcept;
 
     public:
-        sentence(std::initializer_list< std::unique_ptr< word > > sentence);
-
+        sentence(std::initializer_list< std::shared_ptr< word > > sentence);
     public:
         std::string get_whole_sentence_string();
 
@@ -33,7 +32,7 @@ namespace BPlayer
         /**
          * Whole sentence comprised of words.
          */
-        std::vector< std::unique_ptr< word > > whole_sentence;
+        std::vector< std::shared_ptr< word > > whole_sentence;
 
     };
 }

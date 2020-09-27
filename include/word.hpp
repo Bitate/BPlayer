@@ -6,7 +6,13 @@ namespace BPlayer
 {   
     class word
     {
-        public:
+    public:
+        word(const word&) = default;
+        word& operator=(const word&) = default;
+
+        word(word&&) = default;
+        word& operator=(word&&) = default;
+    public:
         /**
          * @brief  Construct a single word.
          * @param  word  Single word.
@@ -19,9 +25,6 @@ namespace BPlayer
          * @param  flag  Whether the word is key word.
          */
         word( std::string word, bool flag );
-
-        word& operator+=( const word& rhs);
-        
     public:
         /**
          * @brief  Whether the word is key word.

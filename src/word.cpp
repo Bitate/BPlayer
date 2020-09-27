@@ -12,12 +12,6 @@ namespace BPlayer
     {
     }
 
-    word& word::operator+=( const word& rhs )
-    {
-        this->single_word += rhs.single_word;
-        return *this;
-    }
-
     bool word::is_key_word()
     {
         return is_key_word_flag;
