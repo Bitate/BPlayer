@@ -24,8 +24,16 @@ namespace BPlayer
         sentence& operator=(sentence&&) noexcept;
 
     public:
-        sentence(std::initializer_list< std::shared_ptr< word > > sentence);
+        /**
+         * @brief  Construct a sentence based on given list of words.
+         * @param  sentence  Given sentence.
+         */
+        sentence(std::initializer_list< std::shared_ptr< word > > words);
     public:
+        /**
+         * @brief  Get whole/complete sentence in the form of std::string.
+         * @return  Whole sentence string.
+         */
         std::string get_whole_sentence_string();
 
     private:

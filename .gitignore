@@ -8,3 +8,5 @@ out
 
 # For third-party libraries
 googletest
+lib
+wx

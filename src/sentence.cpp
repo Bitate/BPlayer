@@ -21,9 +21,9 @@ namespace BPlayer
         return *this;
     }
     
-    sentence::sentence(std::initializer_list< std::shared_ptr< word > > sentence)
+    sentence::sentence(std::initializer_list< std::shared_ptr< word > > words)
     {
-        for(const auto& word : sentence)
+        for(const auto& word : words)
         {
             whole_sentence.push_back( word );
         }
