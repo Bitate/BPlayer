@@ -1,18 +1,54 @@
 cmake_minimum_required(VERSION 3.8)
 
-project(BPlayer)
+project(BPlayer CXX)
 
 enable_testing()
-
-# By default, new Visual Studio projects link the C runtimes dynamically 
-# but Google Test links them statically. This will generate an error 
-# that looks something like the following: gtest.lib(gtest-all.obj) : 
-# error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MTd_StaticDebug' 
-# doesn't match value 'MDd_DynamicDebug' in main.obj
 
 # Force googletest to link dynamically
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
 add_subdirectory(googletest)
 add_subdirectory(src)
 add_subdirectory(tests)
+
+find_package(QT NAMES Qt6 Qt5 COMPONENTS
+    Widgets
+    Core
+    Gui
+    Quick
+    Multimedia
+    MultimediaWidgets
+    MultimediaQuick
+
+    REQUIRED
+)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS
+    Widgets
+    Core
+    Gui
+    Quick
+    Multimedia
+    MultimediaWidgets
+    MultimediaQuick
+
+    REQUIRED
+)
+
+add_executable(main_exec
+    main.cpp
+    main.qrc
+)
+target_link_libraries(main_exec
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Gui
+    Qt${QT_VERSION_MAJOR}::Multimedia
+    Qt${QT_VERSION_MAJOR}::MultimediaWidgets
+    Qt${QT_VERSION_MAJOR}::MultimediaQuick
+    Qt${QT_VERSION_MAJOR}::Quick
+    Qt${QT_VERSION_MAJOR}::Widgets
+)

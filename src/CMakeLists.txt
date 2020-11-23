@@ -17,6 +17,3 @@ add_library(BPlayer
 	${header_files}
 	${source_files}
 )
-target_link_libraries(BPlayer PUBLIC
-	${CMAKE_SOURCE_DIR}/lib/vc14x_x64_dll/wxbase314u_net_vc14x_x64.dll
-)

@@ -1,5 +1,6 @@
 # For build output
 build
+qt-build
 out
 
 # For IDEs
@@ -10,3 +11,4 @@ out
 googletest
 lib
 wx
+*.user
