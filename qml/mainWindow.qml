@@ -21,7 +21,9 @@ ApplicationWindow {
                 onTriggered: fileExplorer.open()
             }
             Action {
-                text: qsTr("&Save")
+                text: qsTr("&Print Open File Url")
+                onTriggered: srt_handler.fileUrl = fileExplorer.fileUrl
+
             }
             Action {
                 text: qsTr("Save &As...")
@@ -110,7 +112,6 @@ ApplicationWindow {
         id: fileExplorer
         title: "Please choose a file"
         folder: shortcuts.home + "/Music"
-        onAccepted: mediaPlayer.playlist.addItem(fileExplorer.fileUrl)
     }
 
     Slider {

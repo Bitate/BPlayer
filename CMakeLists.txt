@@ -7,14 +7,15 @@ enable_testing()
 # Force googletest to link dynamically
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
 
 add_subdirectory(googletest)
 add_subdirectory(src)
 add_subdirectory(tests)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS
     Widgets
@@ -44,6 +45,7 @@ add_executable(main_exec
     main.qrc
 )
 target_link_libraries(main_exec
+    BPlayer
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Multimedia
