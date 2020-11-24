@@ -4,7 +4,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 set(all_test_source_files
     sentence_test.cpp
     word_test.cpp
-    audio_test.cpp
+    srtHandlerTest.cpp
 )
 add_executable(all_tests
     ${all_test_source_files}
@@ -30,10 +30,9 @@ target_link_libraries(word_test
     gtest_main
 )
 
-add_executable(audio_test
-    audio_test.cpp
+add_executable(srtHandlerTest
+    srtHandlerTest.cpp
 )
-target_link_libraries(audio_test
-    BPlayer
+target_link_libraries(srtHandlerTest
     gtest_main
 )

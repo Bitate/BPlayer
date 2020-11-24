@@ -21,8 +21,8 @@ ApplicationWindow {
                 onTriggered: fileExplorer.open()
             }
             Action {
-                text: qsTr("&Print Open File Url")
-                onTriggered: srt_handler.fileUrl = fileExplorer.fileUrl
+                text: qsTr("&Load srt file")
+                onTriggered: srtFileExplorer.open()
 
             }
             Action {
@@ -112,6 +112,15 @@ ApplicationWindow {
         id: fileExplorer
         title: "Please choose a file"
         folder: shortcuts.home + "/Music"
+    }
+
+    FileDialog {
+        id:srtFileExplorer
+        title: "Please choose a srt file"
+        folder: shortcuts.home
+        onFileUrlChanged: {
+            srt_handler.fileUrl = srtFileExplorer.fileUrl
+        }
     }
 
     Slider {
