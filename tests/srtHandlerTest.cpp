@@ -11,19 +11,19 @@ struct testVector {
 testVector parseSrtUnit(const std::string& srtUnit)
 {
     // srtUnit is in the form of:
-    //     "1\r\n"
-    //     "00:00:00,000 --> 00:00:02,000\r\n"
-    //     "Subtitles created by Somebody\r\n"
+    //     "1\n"
+    //     "00:00:00,000 --> 00:00:02,000\n"
+    //     "Subtitles created by Somebody\n"
     
     std::string srtUnitCopy = srtUnit;
     
-    auto sequenceNumberEndPosition = srtUnitCopy.find("\r\n");
+    auto sequenceNumberEndPosition = srtUnitCopy.find("\n");
 
     std::string sequenceNumber = srtUnitCopy.substr(0, sequenceNumberEndPosition);
     
     std::string srtUnitWithoutSequenceNumber = srtUnitCopy.substr(sequenceNumberEndPosition + 2);
 
-    auto timeCodesEndPosition = srtUnitWithoutSequenceNumber.find("\r\n");
+    auto timeCodesEndPosition = srtUnitWithoutSequenceNumber.find("\n");
 
     std::string timeCodes = srtUnitWithoutSequenceNumber.substr(0, timeCodesEndPosition);
 
@@ -38,13 +38,13 @@ std::vector< testVector > parsesrtString(const std::string& srtString)
 
     std::vector< testVector > parsedResult;
 
-    while(srtStringCopy.find("\r\n\r\n") != std::string::npos)
+    while(srtStringCopy.find("\n\n") != std::string::npos)
     {
-        auto srtUnitEndPosition = srtStringCopy.find("\r\n\r\n");
+        auto srtUnitEndPosition = srtStringCopy.find("\n\n");
 
-        std::string srtUnit = srtStringCopy.substr(0, srtUnitEndPosition+2);
+        std::string srtUnit = srtStringCopy.substr(0, srtUnitEndPosition + 2);
     
-        srtStringCopy = srtStringCopy.substr(srtUnitEndPosition + 4);
+        srtStringCopy = srtStringCopy.substr(srtUnitEndPosition + 2);
 
         parsedResult.push_back(parseSrtUnit(srtUnit));
     }
@@ -65,25 +65,25 @@ long long convertTimeCodeToMilliseconds(const std::string& timeCode)
 TEST(srtHandlerTest, parseSrtStringTest)
 {
     std::string srtString = {
-        "1\r\n"
-        "00:00:00,000 --> 00:00:02,000\r\n"
-        "Subtitles created by Somebody\r\n"
-        "\r\n"
+        "1\n"
+        "00:00:00,000 --> 00:00:02,000\n"
+        "Subtitles created by Somebody\n"
+        "\n"
 
-        "2\r\n"
-        "00:00:03,289 --> 00:00:05,462\r\n"
-        "I'm Peppa Pig. (OINKS)\r\n"
-        "\r\n"
+        "2\n"
+        "00:00:03,289 --> 00:00:05,462\n"
+        "I'm Peppa Pig. (OINKS)\n"
+        "\n"
         
-        "3\r\n"
-        "00:00:05,577 --> 00:00:07,970\r\n"
-        "This is my little brother, George. (OINKS)\r\n"
+        "3\n"
+        "00:00:05,577 --> 00:00:07,970\n"
+        "This is my little brother, George. (OINKS)\n"
     };
 
     std::vector< testVector > testCases = {
-        { "1", "00:00:00,000 --> 00:00:02,000", "Subtitles created by Somebody\r\n" },
-        { "2", "00:00:03,289 --> 00:00:05,462", "I'm Peppa Pig. (OINKS)\r\n"},
-        { "3", "00:00:05,577 --> 00:00:07,970", "This is my little brother, George. (OINKS)\r\n"}
+        { "1", "00:00:00,000 --> 00:00:02,000", "Subtitles created by Somebody\n" },
+        { "2", "00:00:03,289 --> 00:00:05,462", "I'm Peppa Pig. (OINKS)\n"},
+        { "3", "00:00:05,577 --> 00:00:07,970", "This is my little brother, George. (OINKS)\n"}
     };
 
     int index = 0;

@@ -19,37 +19,22 @@ void srtHandler::setFileUrl(QUrl &new_file_url)
 
 void srtHandler::loadSrtFile(QString local_file_path)
 {
-    QFile srtFile(local_file_path);
+    std::ifstream file(local_file_path.toStdString());
+    std::ostringstream srtStringStream;
 
-    if(!srtFile.open(QIODevice::ReadOnly))
+    if(file.is_open())
     {
-        qDebug() << "Cannot open srt file with the path: " << local_file_path;
-        QMessageBox::information(nullptr, "error", srtFile.errorString());
+        qDebug() << "Succeeds in opening file: " << local_file_path;
+        srtStringStream << file.rdbuf();    
+        file.close();
     }
     else
     {
-        qDebug() << "Succeeds in opening srt file: " << local_file_path;
+        qDebug() << "Can't open srt file: " << local_file_path;
+        file.close();
     }
 
-    QTextStream srtTextStream(&srtFile);
-
-    std::string srtTextString = srtFile.readAll().toStdString();
-    while(!srtTextStream.atEnd())
-    {
-        // BUG: after reading, the \r\n is cut off.
-        // add \r\n at the end to facilite the parsing process
-        srtTextString.append(srtTextStream.readLine().toStdString());
-    }
-
-    std::cout << "srtTextString: " << srtTextString;
-
-    srtObject = parseSrtString(srtTextString);
-
-    for(auto srt : srtObject)
-    {
-        std::cout << srt.caption << std::endl;
-    }
-    srtFile.close();
+   srtObject = parseSrtString(srtStringStream.str());
 }
 
 void srtHandler::responseToFileUrlChanged(QUrl& new_file_url)
@@ -58,24 +43,24 @@ void srtHandler::responseToFileUrlChanged(QUrl& new_file_url)
     loadSrtFile(local_file_path);
 }
 
-void srtHandler::throwErrorMessage(QString errorSummary, QString concreteDescriptions)
+void srtHandler::popUpErrorMessage(QString errorBoxTitle, QString errorDescription)
 {
-    QMessageBox::warning(nullptr, errorSummary, concreteDescriptions);
+    QMessageBox::warning(nullptr, errorBoxTitle, errorDescription);
 }
 
 std::vector< srtUnit > srtHandler::parseSrtString(const std::string srtString)
 {
     std::string srtStringCopy = srtString;
-    std::cout << "srtString is: " << srtStringCopy;
+
     std::vector< srtUnit > parsedResult;
 
-    while(srtStringCopy.find("\r\n\r\n") != std::string::npos)
+    while(srtStringCopy.find("\n\n") != std::string::npos)
     {
-        auto srtUnitEndPosition = srtStringCopy.find("\r\n\r\n");
+        auto srtUnitEndPosition = srtStringCopy.find("\n\n");
 
         std::string srtUnit = srtStringCopy.substr(0, srtUnitEndPosition+2);
 
-        srtStringCopy = srtStringCopy.substr(srtUnitEndPosition + 4);
+        srtStringCopy = srtStringCopy.substr(srtUnitEndPosition + 2);
 
         parsedResult.push_back(parseSrtUnitString(srtUnit));
     }
@@ -86,23 +71,23 @@ std::vector< srtUnit > srtHandler::parseSrtString(const std::string srtString)
 srtUnit srtHandler::parseSrtUnitString(const std::string srtUnitString)
 {
     // srtUnit is in the form of:
-    //     "1\r\n"
-    //     "00:00:00,000 --> 00:00:02,000\r\n"
-    //     "Subtitles created by Somebody\r\n"
+    //     "1\n"
+    //     "00:00:00,000 --> 00:00:02,000\n"
+    //     "Subtitles created by Somebody\n"
     
     std::string srtUnitCopy = srtUnitString;
     
-    auto sequenceNumberEndPosition = srtUnitCopy.find("\r\n");
+    auto sequenceNumberEndPosition = srtUnitCopy.find("\n");
 
     std::string sequenceNumberString = srtUnitCopy.substr(0, sequenceNumberEndPosition);
     
-    std::string srtUnitWithoutSequenceNumber = srtUnitCopy.substr(sequenceNumberEndPosition + 2);
+    std::string srtUnitWithoutSequenceNumber = srtUnitCopy.substr(sequenceNumberEndPosition + 1);
 
-    auto timeCodesEndPosition = srtUnitWithoutSequenceNumber.find("\r\n");
+    auto timeCodesEndPosition = srtUnitWithoutSequenceNumber.find("\n");
 
     std::string timeCodes = srtUnitWithoutSequenceNumber.substr(0, timeCodesEndPosition);
 
-    std::string caption = srtUnitWithoutSequenceNumber.substr(timeCodesEndPosition + 2);
+    std::string caption = srtUnitWithoutSequenceNumber.substr(timeCodesEndPosition + 1);
     
     int sequenceNumber = std::stoi(sequenceNumberString);
 
