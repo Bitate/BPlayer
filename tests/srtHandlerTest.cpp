@@ -52,7 +52,7 @@ std::vector< testVector > parsesrtString(const std::string& srtString)
     return parsedResult;
 }
 
-long long convertTimeCodeToMilliseconds(const std::string& timeCode)
+int convertTimeCodeToMilliseconds(const std::string& timeCode)
 {
     int hours = std::stoi(timeCode.substr(0, 2));
     int minutes = std::stoi(timeCode.substr(3, 2));
@@ -104,7 +104,7 @@ TEST(srtHandlerTest, convertTimeCodeToMillisecondsTest)
         "05:00:05,577"
     };
 
-    std::vector< long long > expectedResults {
+    std::vector< int > expectedResults {
         3289,
         427970,
         18005577

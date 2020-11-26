@@ -25,14 +25,19 @@
  */
 struct srtUnit {
     int sequenceNumber;
-    long long beginTimeMilliseconds;
-    long long endTimeMilliseconds;
+    int beginTimeMilliseconds;
+    int endTimeMilliseconds;
     std::string caption;
 };
 class srtHandler : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QUrl fileUrl READ fileUrl WRITE setFileUrl NOTIFY fileUrlChanged)
+    Q_PROPERTY(int currentSectionBegin READ currentSectionBegin WRITE setCurrentSectionBegin NOTIFY currentSectionBeginChanged)
+    Q_PROPERTY(int currentSectionEnd READ currentSectionEnd WRITE setCurrentSectionEnd NOTIFY currentSectionEndChanged)
+    Q_PROPERTY(int currentSectionSequenceNumber READ currentSectionSequenceNumber WRITE setCurrentSectionSequenceNumber NOTIFY currentSectionSequenceNumberChanged)
+    Q_PROPERTY(bool hasSrtFile READ hasSrtFile)
+    Q_PROPERTY(QString subtitleText READ subtitleText)
     // Life time management
 public:
     explicit srtHandler(QObject *parent = nullptr);
@@ -64,23 +69,35 @@ private:
     srtUnit parseSrtUnitString(const std::string srtUnitString);
 
     /**
-     * @brief  Convert timecode string to milliseconds with type of long long integer.
+     * @brief  Convert timecode string to milliseconds with type of int integer.
      * @param  timeCode Srt time code string.
      * @return  Milliseconds.
      */
-    long long convertTimeCodeToMilliseconds(const std::string& timeCode);
+    int convertTimeCodeToMilliseconds(const std::string& timeCode);
 
     // Qt getters
 public:
     QUrl fileUrl();
+    int currentSectionBegin();
+    int currentSectionEnd();
+    int currentSectionSequenceNumber();
+    bool hasSrtFile() const;
+    QString subtitleText() const;
 
     // Qt setters
 public:
     void setFileUrl(QUrl& new_file_url);
+    void setCurrentSectionBegin(const int newCurrentSectionBegin);
+    void setCurrentSectionEnd(const int newCurrentSectionEnd);
+    void setCurrentSectionSequenceNumber(const int newCurrentSectionSequenceNumber);
 
     // Qt signals
 signals:
     void fileUrlChanged(QUrl& new_file_url);
+    void currentSectionBeginChanged(const int newCurrentSectionBegin);
+    void currentSectionEndChanged(const int newCurrentSectionEnd);
+    void currentSectionSequenceNumberChanged(const int newCurrentSectionSequenceNumber);
+
 
     // Qt slots
 private slots:
@@ -89,6 +106,8 @@ private slots:
      * @param  new_file_url  Newly set file url passed from signal fileUrlChanged().
      */
     void responseToFileUrlChanged(QUrl& new_file_url);
+
+    void slotOfCurrentSectionSequenceNumberChanged(const int newCurrentSectionSequenceNumber);
 
     // Private variables
 private:
@@ -101,6 +120,12 @@ private:
      * @brief  After loading srt file, the srt string will be parsed and stored to this variable.
      */
     std::vector< srtUnit > srtObject;
+
+    int currentSectionSequenceIntegerNumber;
+
+    int currentSectionBeginMilliseconds;
+    int currentSectionEndMilliseconds;
+    bool hasSrtFileFlag;
 };
 
 #endif // SRTHANDLER_H

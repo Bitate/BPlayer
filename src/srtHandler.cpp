@@ -1,7 +1,14 @@
+#include "..\include\srtHandler.hpp"
+#include "..\include\srtHandler.hpp"
+#include "..\include\srtHandler.hpp"
+#include "..\include\srtHandler.hpp"
+#include "..\include\srtHandler.hpp"
+#include "..\include\srtHandler.hpp"
 #include "srtHandler.hpp"
 
 srtHandler::srtHandler(QObject *parent)
-    : QObject(parent), fileDialog(new QFileDialog)
+    : QObject(parent), fileDialog(new QFileDialog), currentSectionSequenceIntegerNumber(0),
+      currentSectionBeginMilliseconds(0), currentSectionEndMilliseconds(0), hasSrtFileFlag(false)
 {
     QObject::connect(this, &srtHandler::fileUrlChanged, this, &srtHandler::responseToFileUrlChanged);
 }
@@ -35,6 +42,10 @@ void srtHandler::loadSrtFile(QString local_file_path)
     }
 
    srtObject = parseSrtString(srtStringStream.str());
+
+   setCurrentSectionBegin(srtObject[0].beginTimeMilliseconds);
+   setCurrentSectionEnd(srtObject[0].endTimeMilliseconds);
+   hasSrtFileFlag = true;
 }
 
 void srtHandler::responseToFileUrlChanged(QUrl& new_file_url)
@@ -89,19 +100,20 @@ srtUnit srtHandler::parseSrtUnitString(const std::string srtUnitString)
 
     std::string caption = srtUnitWithoutSequenceNumber.substr(timeCodesEndPosition + 1);
     
-    int sequenceNumber = std::stoi(sequenceNumberString);
+    // Let sequence number starts from 0 as the index of array.
+    int sequenceNumber = std::stoi(sequenceNumberString)-1;
 
     // 00:00:00,000 --> 00:00:02,000
     std::string beginTimeString = timeCodes.substr(0, 12);
-    std::string endTimeString = timeCodes.substr(18, 12);
+    std::string endTimeString = timeCodes.substr(17, 12);
 
-    long long beginTimeMilliseconds = convertTimeCodeToMilliseconds(beginTimeString);
-    long long endTimeMilliseconds = convertTimeCodeToMilliseconds(endTimeString);
+    int beginTimeMilliseconds = convertTimeCodeToMilliseconds(beginTimeString);
+    int endTimeMilliseconds = convertTimeCodeToMilliseconds(endTimeString);
 
     return { sequenceNumber, beginTimeMilliseconds, endTimeMilliseconds, caption };
 }
 
-long long srtHandler::convertTimeCodeToMilliseconds(const std::string& timeCode)
+int srtHandler::convertTimeCodeToMilliseconds(const std::string& timeCode)
 {
     int hours = std::stoi(timeCode.substr(0, 2));
     int minutes = std::stoi(timeCode.substr(3, 2));
@@ -110,3 +122,60 @@ long long srtHandler::convertTimeCodeToMilliseconds(const std::string& timeCode)
 
     return milliseconds + ((seconds + minutes*60 + hours*60*60) * 1000);
 }
+
+int srtHandler::currentSectionBegin()
+{
+    if(srtObject.size() != 0)
+        currentSectionBeginMilliseconds = srtObject[currentSectionSequenceIntegerNumber].beginTimeMilliseconds;
+    return currentSectionBeginMilliseconds;
+}
+
+int srtHandler::currentSectionEnd()
+{
+    if(srtObject.size() != 0)
+        currentSectionEndMilliseconds = srtObject[currentSectionSequenceIntegerNumber].endTimeMilliseconds;
+    return currentSectionEndMilliseconds;
+}
+
+int srtHandler::currentSectionSequenceNumber()
+{
+    return currentSectionSequenceIntegerNumber;
+}
+
+bool srtHandler::hasSrtFile() const
+{
+    return hasSrtFileFlag;
+}
+
+QString srtHandler::subtitleText() const
+{
+    if (srtObject.size() != 0)
+        return QString(srtObject[currentSectionSequenceIntegerNumber].caption.c_str());
+    else
+        return QString();
+}
+
+void srtHandler::setCurrentSectionBegin(const int newCurrentSectionBegin)
+{
+    currentSectionBeginMilliseconds = newCurrentSectionBegin;
+    emit currentSectionBeginChanged(newCurrentSectionBegin);
+}
+
+void srtHandler::setCurrentSectionEnd(const int newCurrentSectionEnd)
+{
+    currentSectionEndMilliseconds = newCurrentSectionEnd;
+    emit currentSectionEndChanged(newCurrentSectionEnd);
+}
+
+void srtHandler::setCurrentSectionSequenceNumber(const int newCurrentSectionSequenceNumber)
+{
+    currentSectionSequenceIntegerNumber = newCurrentSectionSequenceNumber;
+    emit currentSectionSequenceNumberChanged(newCurrentSectionSequenceNumber);
+}
+
+void srtHandler::slotOfCurrentSectionSequenceNumberChanged(const int newCurrentSectionSequenceNumber)
+{
+    currentSectionBeginMilliseconds = srtObject[newCurrentSectionSequenceNumber].beginTimeMilliseconds;
+    currentSectionEndMilliseconds = srtObject[newCurrentSectionSequenceNumber].endTimeMilliseconds;
+}
+

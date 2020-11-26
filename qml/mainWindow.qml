@@ -8,7 +8,7 @@ ApplicationWindow {
     id: applicationWindow
     visible: true
     height: 600
-    width: 1000
+    width: 1024
 
     menuBar: MenuBar {
         Menu {
@@ -100,12 +100,45 @@ ApplicationWindow {
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
+        Text {
+            id: subtitleText
+            x: 26
+            y: 480
+            width: 948
+            height: 50
+            color: "#fdfdfd"
+            text: "Here is subtitle area"
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            font.pixelSize: 25
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            anchors.rightMargin: 26
+            anchors.leftMargin: 26
+            anchors.topMargin: 480
+            minimumPointSize: 14
+            minimumPixelSize: 14
+        }
+
     }
 
     MediaPlayer {
         id: mediaPlayer
         source: fileExplorer.fileUrl
         volume: volumeSlider.volume
+
+        onPositionChanged: {
+            if(srtHandler.hasSrtFile)
+            {
+                if(mediaPlayer.position > srtHandler.currentSectionEnd)
+                {
+                    mediaPlayer.seek(srtHandler.currentSectionBegin)
+                }
+                subtitleText.text = srtHandler.subtitleText
+            }
+        }
     }
 
     FileDialog {
@@ -119,8 +152,9 @@ ApplicationWindow {
         title: "Please choose a srt file"
         folder: shortcuts.home
         onFileUrlChanged: {
-            srt_handler.fileUrl = srtFileExplorer.fileUrl
+            srtHandler.fileUrl = srtFileExplorer.fileUrl
         }
+
     }
 
     Slider {
@@ -215,6 +249,64 @@ ApplicationWindow {
 
         onClicked: fileExplorer.open()
     }
+
+    Button {
+        id: nextSubtitleSection
+        text: qsTr("NSS")
+        anchors.left: previousSubtitleSection.right
+        anchors.right: parent.right
+        anchors.top: playProgressBar.bottom
+        anchors.bottom: parent.bottom
+        anchors.rightMargin: 614
+        anchors.leftMargin: 0
+        anchors.topMargin: 6
+        display: AbstractButton.TextBesideIcon
+        anchors.bottomMargin: 0
+
+        onClicked: {
+            srtHandler.currentSectionSequenceNumber += 1;
+            mediaPlayer.seek(srtHandler.currentSectionBegin)
+        }
+    }
+
+    Button {
+        id: previousSubtitleSection
+        width: 50
+        text: qsTr("PSS")
+        anchors.left: openButton.right
+        anchors.top: playProgressBar.bottom
+        anchors.bottom: parent.bottom
+        anchors.topMargin: 6
+        anchors.leftMargin: 40
+        display: AbstractButton.TextBesideIcon
+        anchors.bottomMargin: 0
+
+        onClicked: {
+            if(srtHandler.currentSectionSequenceNumber != 0)
+                srtHandler.currentSectionSequenceNumber -= 1;
+        }
+    }
+
+    CheckBox {
+        id: showSubtitleCheckBox
+        text: "Show Subtitle"
+        anchors.left: previousSubtitleSection.right
+        anchors.right: parent.right
+        anchors.top: playProgressBar.bottom
+        anchors.bottom: parent.bottom
+        anchors.rightMargin: 463
+        checked: true
+        checkable: true
+        font.styleName: "Regular"
+        font.family: "Verdana"
+        anchors.bottomMargin: 0
+        anchors.topMargin: 6
+        anchors.leftMargin: 70
+
+        onClicked: {
+            subtitleText.visible = !subtitleText.visible
+        }
+    }
 }
 
 
@@ -226,3 +318,11 @@ ApplicationWindow {
 
 
 
+
+
+
+/*##^##
+Designer {
+    D{i:0;formeditorZoom:0.6600000262260437}D{i:28}
+}
+##^##*/
