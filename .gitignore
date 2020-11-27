@@ -9,6 +9,7 @@ out
 
 # For third-party libraries
 googletest
-lib
+FFmpeg-n3.0
+opencv-4.5.0
 wx
 *.user

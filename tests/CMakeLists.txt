@@ -36,3 +36,11 @@ add_executable(srtHandlerTest
 target_link_libraries(srtHandlerTest
     gtest_main
 )
+
+add_executable(videoTest
+    videoTest.cpp
+)
+target_link_libraries(videoTest
+    BPlayer
+    gtest_main
+)

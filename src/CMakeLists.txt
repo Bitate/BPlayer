@@ -1,11 +1,12 @@
 include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 set(header_files
 	../include/sentence.hpp
 	../include/audio.hpp
 	../include/video.hpp	
 	../include/word.hpp
-        ../include/srtHandler.hpp
+    ../include/srtHandler.hpp
 )
 set(source_files
 	sentence.cpp
@@ -58,3 +59,10 @@ target_link_libraries(BPlayer
     Qt${QT_VERSION_MAJOR}::Widgets
 )
 
+add_library(BVideo
+    ../include/video.hpp
+    video.cpp
+)
+target_link_libraries(BVideo 
+    ${OpenCV_LIBS}
+)
