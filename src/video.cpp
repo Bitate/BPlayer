@@ -7,5 +7,10 @@ bool Video::clipVideo(
     const std::string& newVideoPath
 )
 {
+    if(targetVideoPath.empty())
+        return false;
+
+
+
     return true;
 }

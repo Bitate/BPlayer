@@ -5,9 +5,6 @@
 #include <QFileDialog>
 #include <QString>
 #include <QFile>
-#include <QAbstractButton>
-#include <QTextStream>
-#include <QTime>
 #include <QDebug>
 #include <QMessageBox>
 

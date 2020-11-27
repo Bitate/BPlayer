@@ -1,9 +1,4 @@
 #include "..\include\srtHandler.hpp"
-#include "..\include\srtHandler.hpp"
-#include "..\include\srtHandler.hpp"
-#include "..\include\srtHandler.hpp"
-#include "..\include\srtHandler.hpp"
-#include "..\include\srtHandler.hpp"
 #include "srtHandler.hpp"
 
 srtHandler::srtHandler(QObject *parent)
