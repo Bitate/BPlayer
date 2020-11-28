@@ -6,6 +6,7 @@ TEST(videoTest, clipVideoTest)
 {
     Video video;
 
+    // Change following two paths according to your need
     std::string targetVideoPath = "C:/Users/16605/Music/Something Just Like This.mp4";
     std::string newVideoPath = "C:/Users/16605/Music/Something Just Like This Clipped.mp4";
     int beginMilliseconds = 1000;

@@ -10,7 +10,10 @@ bool Video::clipVideo(
     if(targetVideoPath.empty())
         return false;
 
+    cv::VideoCapture capture(targetVideoPath.c_str());
 
+    if(!capture.isOpened())
+        std::cout << "Can't open video" << std::endl;
 
     return true;
 }

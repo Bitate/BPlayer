@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <iostream>
+#include <opencv2/videoio.hpp>
 
 class Video
 {

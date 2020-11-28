@@ -1,5 +1,4 @@
 include_directories(${CMAKE_SOURCE_DIR}/include)
-include_directories(${OpenCV_INCLUDE_DIRS})
 
 set(header_files
 	../include/sentence.hpp
@@ -44,7 +43,6 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS
     REQUIRED
 )
 
-
 add_library(BPlayer
 	${header_files}
 	${source_files}
@@ -58,6 +56,12 @@ target_link_libraries(BPlayer
     Qt${QT_VERSION_MAJOR}::Quick
     Qt${QT_VERSION_MAJOR}::Widgets
 )
+
+
+# Find OpenCV binaries
+find_package(OpenCV REQUIRED)
+# Include directory that contains OpenCV header files
+include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 add_library(BVideo
     ../include/video.hpp

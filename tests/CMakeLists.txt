@@ -41,6 +41,6 @@ add_executable(videoTest
     videoTest.cpp
 )
 target_link_libraries(videoTest
-    BPlayer
+    BVideo
     gtest_main
 )
