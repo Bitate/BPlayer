@@ -57,10 +57,11 @@ target_link_libraries(BPlayer
     Qt${QT_VERSION_MAJOR}::Widgets
 )
 
-
 # Find OpenCV binaries
-find_package(OpenCV REQUIRED)
+# find_package(OpenCV REQUIRED)
 # Include directory that contains OpenCV header files
+
+set(OpenCV_INCLUDE_DIRS "D:/opencv/build/include")
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 add_library(BVideo
@@ -68,5 +69,6 @@ add_library(BVideo
     video.cpp
 )
 target_link_libraries(BVideo 
-    ${OpenCV_LIBS}
+    # ${OpenCV_LIBS}
+    ${OpenCV_DIR}/x64/vc15/lib/opencv_world3412.lib
 )

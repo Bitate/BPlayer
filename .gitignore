@@ -6,6 +6,7 @@ out
 # For IDEs
 .vscode
 .vs
+CMakeSettings.json
 
 # For third-party libraries
 googletest
