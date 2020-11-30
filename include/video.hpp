@@ -2,15 +2,13 @@
 
 #include <string>
 #include <iostream>
-#include "opencv"
+#include "opencv2/opencv.hpp"
 
 
 class Video
 {
 public:
     Video();
-    ~Video();
-
 public:
     bool clipVideo(
         const std::string& targetVideoPath,
@@ -21,6 +19,10 @@ public:
 
 
     
-
-    
+private:
+    // frame per second
+    double fps;
+    double frameCount;
+    int startMilliseconds;
+    int endMilliseconds;
 };
