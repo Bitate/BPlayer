@@ -57,13 +57,13 @@ target_link_libraries(BPlayer
     Qt${QT_VERSION_MAJOR}::Widgets
 )
 
-# Find OpenCV 
-find_package(OpenCV REQUIRED)
-
 add_library(BVideo STATIC
     ../include/video.hpp
     video.cpp
 )
+
+# Find and link OpenCV
+find_package(OpenCV REQUIRED)
 target_link_libraries(BVideo 
     ${OpenCV_LIBS}
 )

@@ -54,3 +54,4 @@ target_link_libraries(main_exec
     Qt${QT_VERSION_MAJOR}::Quick
     Qt${QT_VERSION_MAJOR}::Widgets
 )
+

@@ -13,14 +13,14 @@ bool Video::clipVideo(
 {
     //open the video file for reading
     cv::VideoCapture targetVideo(targetVideoPath);
-
+    
     if (!targetVideo.isOpened())
     {
         std::cout << "Cannot open the video file" << std::endl;
         targetVideo.release();
         return false;
     }
-
+    
     // Set starting time in milliseconds
     targetVideo.set(cv::CAP_PROP_POS_MSEC, beginMilliseconds);
     
