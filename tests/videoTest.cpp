@@ -18,6 +18,12 @@ TEST(videoTest, clipVideoTest)
         endMilliseconds,
         newVideoPath
     );
+}
+
+TEST(vidoeTest, ffmpegTest)
+{
+    AVCodec* code;
     
+    // TODO: Add ffmpeg examples here
 
 }

@@ -70,7 +70,7 @@ else()
   set( OpenCV_DIR "C:/vcpkg/installed/x64-windows/share/opencv" )
 endif()
 
-# Find Package
+# Find OpenCV Package
 find_package( OpenCV REQUIRED )
 
 if( OpenCV_FOUND )
@@ -82,4 +82,12 @@ if( OpenCV_FOUND )
 
   # Additional Dependencies
   target_link_libraries( BVideo ${OpenCV_LIBS} )
+endif()
+
+find_package( FFMPEG REQUIRED )
+
+if( FFMPEG_FOUND )
+    include_directories( ${FFMPEG_INCLUDE_DIRS} )
+    link_directories( ${FFMPEG_LIB_DIR} )
+    target_link_libraries( BVideo ${FFMPEG_LIBS})
 endif()

@@ -2,7 +2,9 @@
 
 #include <string>
 #include <iostream>
-
+#include <opencv2/opencv.hpp>
+#include <libavcodec/avcodec.h>
+#include <libavutil/mathematics.h>
 
 class Video
 {
@@ -16,8 +18,6 @@ public:
         const std::string& newVideoPath
     );
 
-
-    
 private:
     // frame per second
     double fps;
