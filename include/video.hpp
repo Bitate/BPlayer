@@ -3,8 +3,18 @@
 #include <string>
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include <libavcodec/avcodec.h>
-#include <libavutil/mathematics.h>
+
+#ifdef __cplusplus  
+extern "C" 
+{
+#endif  
+    #include <libavcodec/avcodec.h>
+    #include <libavformat/avformat.h>
+    #include <libavformat/avio.h>
+    #include <libavutil/file.h>
+#ifdef __cplusplus  
+}
+#endif  
 
 class Video
 {

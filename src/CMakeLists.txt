@@ -85,9 +85,11 @@ if( OpenCV_FOUND )
 endif()
 
 find_package( FFMPEG REQUIRED )
+include_directories( ${FFMPEG_INCLUDE_DIRS} )
+message(STATUS "FFMPEG_INCLUDE_DIRS -> ${FFMPEG_INCLUDE_DIRS}")
 
-if( FFMPEG_FOUND )
-    include_directories( ${FFMPEG_INCLUDE_DIRS} )
-    link_directories( ${FFMPEG_LIB_DIR} )
-    target_link_libraries( BVideo ${FFMPEG_LIBS})
-endif()
+link_directories( ${FFMPEG_LIBRARY_DIRS} )
+message(STATUS "FFMPEG_LIBRARY_DIRS -> ${FFMPEG_LIBRARY_DIRS}")
+
+target_link_libraries( BVideo ${FFMPEG_LIBRARIES})
+message(STATUS "FFMPEG_LIBRARIES -> ${FFMPEG_LIBRARIES}")
