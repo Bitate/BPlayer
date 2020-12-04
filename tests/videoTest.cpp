@@ -22,7 +22,11 @@ TEST(videoTest, clipVideoTest)
 
 TEST(vidoeTest, ffmpegTest)
 {
+    // We first need to load our media file into a component called AVFormatContext.
+    // The video container is also known as format.
+    // This component doesn't fully load the whole file, it reads the header of the file.
     AVFormatContext* formatContext = avformat_alloc_context();
+    
     avformat_open_input(
         &formatContext,
         "C:/Users/16605/Music/Something Just Like This.mp4",
@@ -110,4 +114,27 @@ TEST(vidoeTest, ffmpegTest)
             );
         }  
     }
+}
+
+TEST(videoTest, ffmpegMuxingTest)
+{
+    /**
+     * Emmm, what is muxing ???
+     *      TODO: Figure it out.
+     * 
+     * Muxing process:
+     *      avformat_write_header() -> av_write_frame()/av_interleaved_write_frame() -> av_write_trailer()
+     */
+    AVFormatContext* avformat = avformat_alloc_context();
+}
+
+TEST(videoTest, ffmpegAVPacketTest)
+{
+    /**
+     *  AVPacket structure stores compressed data.
+     */
+    AVPacket* avPacket = nullptr;
+    avPacket->data;         // Actual byte?
+    avPacket->dts;          // DTS(Decompression Timestamp)
+    avPacket->stream_index; // ???
 }
