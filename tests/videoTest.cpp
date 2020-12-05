@@ -12,6 +12,7 @@ TEST(videoTest, clipVideoTest)
     int beginMilliseconds = 0;
     int endMilliseconds   = 100000;
 
+    // TODO: fix this function using ffmpeg library
     /*video.clipVideo(
         targetVideoPath,
         beginMilliseconds,
@@ -63,38 +64,38 @@ TEST(vidoeTest, ffmpegTest)
                 i
             );
 
-            // codecContext holds the context for our decode/encode process
-            AVCodecContext* codecContext = avcodec_alloc_context3(codec);
+            // // codecContext holds the context for our decode/encode process
+            // AVCodecContext* codecContext = avcodec_alloc_context3(codec);
 
-            // Fill the context with codec parameters
-            avcodec_parameters_to_context(codecContext, codecParameters);
+            // // Fill the context with codec parameters
+            // avcodec_parameters_to_context(codecContext, codecParameters);
 
-            // Open the codec so that we can use it
-            avcodec_open2(codecContext, codec, nullptr);
+            // // Open the codec so that we can use it
+            // avcodec_open2(codecContext, codec, nullptr);
 
-            // Now we're going to read the packets from the stream 
-            // and decode them into frames.
-            AVPacket* packet = av_packet_alloc();
-            AVFrame* frame = av_frame_alloc();
+            // // Now we're going to read the packets from the stream 
+            // // and decode them into frames.
+            // AVPacket* packet = av_packet_alloc();
+            // AVFrame* frame = av_frame_alloc();
 
-            // Feed packets from the streams while it has packets
-            while(av_read_frame(formatContext, packet) >= 0)
-            {
-                avcodec_send_packet(codecContext, packet);
+            // // Feed packets from the streams while it has packets
+            // while(av_read_frame(formatContext, packet) >= 0)
+            // {
+            //     avcodec_send_packet(codecContext, packet);
 
-                avcodec_receive_frame(codecContext, frame);
+            //     avcodec_receive_frame(codecContext, frame);
 
-                printf(
-                    "Frame %c (%d) pts %d dts %d key_frame %d [coded_picture_number %d, display_picture_number %d]",
-                    av_get_picture_type_char(frame->pict_type),
-                    codecContext->frame_number,
-                    frame->pts,
-                    frame->pkt_dts,
-                    frame->key_frame,
-                    frame->coded_picture_number,
-                    frame->display_picture_number
-                );
-            }
+            //     printf(
+            //         "Frame %c (%d) pts %d dts %d key_frame %d [coded_picture_number %d, display_picture_number %d]",
+            //         av_get_picture_type_char(frame->pict_type),
+            //         codecContext->frame_number,
+            //         frame->pts,
+            //         frame->pkt_dts,
+            //         frame->key_frame,
+            //         frame->coded_picture_number,
+            //         frame->display_picture_number
+            //     );
+            // }
         }else if(codecParameters->codec_type == AVMEDIA_TYPE_AUDIO)
         {
             printf(
@@ -119,13 +120,51 @@ TEST(vidoeTest, ffmpegTest)
 TEST(videoTest, ffmpegMuxingTest)
 {
     /**
-     * Emmm, what is muxing ???
-     *      TODO: Figure it out.
+     * Emmm, what is muxing and demuxing ???
+     *      Demuxing:   Read multimedia streams from a particular type of media file. 
+     *                  See: https://ffmpeg.org/doxygen/trunk/group__lavf__decoding.html
+     *                                               -------------> stream 1 (e.g. audio)
+     *                                              /
+     *                  input multimedia file ----  --------------> stream 2 (e.g. video)
+     *                                              \
+     *                                               -------------> stream 3 (e.g. subtitle)
      * 
-     * Muxing process:
-     *      avformat_write_header() -> av_write_frame()/av_interleaved_write_frame() -> av_write_trailer()
+     *      Muxing:     Write multimedia streams to a particular type of media file.
+     *                  See: https://ffmpeg.org/doxygen/4.0/group__lavf__encoding.html
+     *                  stream 1 ----------------
+     *                                           \
+     *                  stream 2 ----------------  ----> output multimedia file
+     *                                           /
+     *                  stream 3 ----------------
      */
-    AVFormatContext* avformat = avformat_alloc_context();
+
+    /**
+     * Demuxing/Decoding/Read
+     */
+    AVFormatContext* formatContext = avformat_alloc_context();
+
+    int openResult = avformat_open_input(
+        &formatContext,
+        "C:/Users/16605/Music/Something Just Like This.mp4",
+        nullptr,
+        nullptr
+    );
+
+    if(openResult < 0)
+    {
+        printf("Can't open input file");
+        abort();
+    }
+
+    /**
+     * Muxing/Encoding/Write
+     */
+    AVFormatContext* muxingFormatContext = avformat_alloc_context();
+
+    // TODO: how to write to a media file?
+    // avformat_write_header(muxingFormatContext, nullptr);
+    // av_write_frame(muxingFormatContext, nullptr);
+    // av_write_trailer(muxingFormatContext);
 }
 
 TEST(videoTest, ffmpegAVPacketTest)
