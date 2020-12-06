@@ -174,6 +174,19 @@ TEST(videoTest, ffmpegAVPacketTest)
      */
     AVPacket* avPacket = nullptr;
     avPacket->data;         // Actual byte?
+    avPacket->pts;          // PTS(Presentation Timestamp)
     avPacket->dts;          // DTS(Decompression Timestamp)
     avPacket->stream_index; // ???
+
+    AVStream* avStream = nullptr;
+}
+
+TEST(videoTest, ffmpegTimeTest)
+{
+    /**
+     * What is timestamp, timescale and timebase?
+     *  Each frame has a timestamp;
+     *  Timescale is the reciprocal of the timebase;
+     *  Timebase is used in the resolution of timestamps;
+     */
 }
