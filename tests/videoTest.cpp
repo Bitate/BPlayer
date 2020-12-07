@@ -48,10 +48,12 @@ TEST(vidoeTest, ffmpegTest)
     // loop through all the streams
     for(int i = 0; i < formatContext->nb_streams; ++i)
     {
-        // AVCodecParameters describes the properties of a codec used by the stream i
+        // AVCodecParameters describes the properties of an encoded codec/stream with the index of i
         AVCodecParameters* codecParameters = formatContext->streams[i]->codecpar;
 
-        // Find the registered decoder for the codec id and return an AVCodec
+        // Find the registered decoder for the given codec id and return an AVCodec struct.
+        // The AVCodec is a struct used to hold information about the codec such as codec name, etc.
+        // Codec Id is predefined by ffmpeg, for more see declaration of enum AVCodecID in ffmpeg source code.
         AVCodec* codec = avcodec_find_decoder(codecParameters->codec_id);
 
         // print infos about the codecs
