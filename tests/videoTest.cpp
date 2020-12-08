@@ -51,6 +51,9 @@ TEST(vidoeTest, ffmpegTest)
         // AVCodecParameters describes the properties of an encoded codec/stream with the index of i
         AVCodecParameters* codecParameters = formatContext->streams[i]->codecpar;
 
+        // TODO: What is AVStream used for?
+        //  1. We have both video stream and audio stream
+    
         // Find the registered decoder for the given codec id and return an AVCodec struct.
         // The AVCodec is a struct used to hold information about the codec such as codec name, etc.
         // Codec Id is predefined by ffmpeg, for more see declaration of enum AVCodecID in ffmpeg source code.
@@ -60,7 +63,8 @@ TEST(vidoeTest, ffmpegTest)
         if(codecParameters->codec_type == AVMEDIA_TYPE_VIDEO)
         {
             printf(
-                "Video Codec: resolution %d x %d with the index of %d within format context\n", 
+                "Video Codec(%s): resolution %d x %d with the index of %d within format context\n", 
+                codec->long_name,
                 codecParameters->width, 
                 codecParameters->height, 
                 i
@@ -101,7 +105,8 @@ TEST(vidoeTest, ffmpegTest)
         }else if(codecParameters->codec_type == AVMEDIA_TYPE_AUDIO)
         {
             printf(
-                "Audio Codec: %d channels and sample rate %d with the index of %d within format context\n", 
+                "Audio Codec(%s): %d channels and sample rate %d with the index of %d within format context\n", 
+                codec->long_name,
                 codecParameters->channels, 
                 codecParameters->sample_rate, 
                 i
