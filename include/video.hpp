@@ -12,6 +12,9 @@ extern "C"
     #include <libavformat/avformat.h>
     #include <libavformat/avio.h>
     #include <libavutil/file.h>
+    #include <libavutil/imgutils.h>
+    #include <libavutil/timestamp.h>
+    #include <libavutil/samplefmt.h>
 #ifdef __cplusplus  
 }
 #endif  

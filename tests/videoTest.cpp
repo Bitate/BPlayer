@@ -124,7 +124,7 @@ TEST(vidoeTest, ffmpegTest)
     }
 }
 
-TEST(videoTest, ffmpegMuxingTest)
+TEST(videoTest, ffmpegMuxingDemuxingTest)
 {
     /**
      * Emmm, what is muxing and demuxing ???
@@ -150,23 +150,99 @@ TEST(videoTest, ffmpegMuxingTest)
      */
     AVFormatContext* formatContext = avformat_alloc_context();
 
-    int openResult = avformat_open_input(
-        &formatContext,
-        "C:/Users/16605/Music/Something Just Like This.mp4",
-        nullptr,
-        nullptr
-    );
-
-    if(openResult < 0)
+    // Open video file and allocate format context
+    if(avformat_open_input(&formatContext, "C:/Users/16605/Music/Something Just Like This.mp4", nullptr, nullptr) < 0)
     {
         printf("Can't open input file");
         abort();
+    }
+
+    // Retrieve stream information
+    if(avformat_find_stream_info(formatContext, nullptr) < 0)
+    {
+        printf("Can't Retrieve stream info");
+        abort();
+    }    
+
+    AVCodecContext* videoCodecContext = nullptr;
+    AVCodecContext* audioCodecContext = nullptr;
+    for(int i = 0; i < formatContext->nb_streams; ++i)
+    {
+        // Initialize packet, set data to null and let the demuxer fill it.
+        AVPacket packet;
+        av_init_packet(&packet);
+        packet.data = nullptr;
+        packet.size = 0;
+
+        // Read frames from the file
+        while(av_read_frame(formatContext, &packet) >= 0)
+        {
+            // Check if the packet belongs to a stream we are interested in.
+            // That is whether we are dealing with video stream or audio stream 
+            // or both, otherwise skip that packet.
+            if(formatContext->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO)
+            {
+                // Submit the packet to the decoder
+                int sendPacketResult = avcodec_send_packet(videoCodecContext, &packet);
+
+                if(sendPacketResult < 0)
+                {
+                    std::cout << "Error sending a packet to decoder" << std::endl;
+                }
+
+                // Get all the available frames from the decoder
+                while(sendPacketResult >= 0)
+                {
+                    AVFrame frame;
+                    sendPacketResult = avcodec_receive_frame(videoCodecContext, &frame);
+                    
+                    if( sendPacketResult < 0 
+                        && (sendPacketResult != AVERROR_EOF || sendPacketResult != AVERROR(EAGAIN)) )
+                    {
+                        std::cout << "Error during decoding" << std::endl;
+                    }
+                    
+                    // Allocate image where the decoded image will be put
+                    uint8_t* videoDestinationData[4] = { nullptr };
+                    int videoDestinationLinesize[4];
+
+                    // Allocate Pixel 
+                    enum AVPixelFormat pixelFormat;
+                    int width, height;
+
+                    // TODO: set pixel info
+
+                    // Copy/Write decoded video frame to destination output file's buffer:
+                    // this is required since rawvideo expects non aligned data
+                    av_image_copy(
+                        videoDestinationData,
+                        videoDestinationLinesize,
+                        (const uint8_t**)(frame.data),
+                        frame.linesize,
+                        pixelFormat,
+                        width,
+                        height
+                    );
+
+                    // TODO: wirte to video output file
+                }
+
+            }
+            else if(formatContext->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO)
+            {
+                
+            }
+        }
+
+        
     }
 
     /**
      * Muxing/Encoding/Write
      */
     AVFormatContext* muxingFormatContext = avformat_alloc_context();
+
+    
 
     // TODO: how to write to a media file?
     // avformat_write_header(muxingFormatContext, nullptr);
