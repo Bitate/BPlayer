@@ -148,25 +148,23 @@ TEST(videoTest, ffmpegMuxingDemuxingTest)
     /**
      * Demuxing/Decoding/Read
      */
-    AVFormatContext* formatContext = avformat_alloc_context();
+    AVFormatContext* videoFormatContext = avformat_alloc_context();
 
     // Open video file and allocate format context
-    if(avformat_open_input(&formatContext, "C:/Users/16605/Music/Something Just Like This.mp4", nullptr, nullptr) < 0)
+    if(avformat_open_input(&videoFormatContext, "C:/Users/16605/Music/Something Just Like This.mp4", nullptr, nullptr) < 0)
     {
         printf("Can't open input file");
         abort();
     }
 
     // Retrieve stream information
-    if(avformat_find_stream_info(formatContext, nullptr) < 0)
+    if(avformat_find_stream_info(videoFormatContext, nullptr) < 0)
     {
         printf("Can't Retrieve stream info");
         abort();
     }    
 
-    AVCodecContext* videoCodecContext = nullptr;
-    AVCodecContext* audioCodecContext = nullptr;
-    for(int i = 0; i < formatContext->nb_streams; ++i)
+    for(int i = 0; i < videoFormatContext->nb_streams; ++i)
     {
         // Initialize packet, set data to null and let the demuxer fill it.
         AVPacket packet;
@@ -175,13 +173,48 @@ TEST(videoTest, ffmpegMuxingDemuxingTest)
         packet.size = 0;
 
         // Read frames from the file
-        while(av_read_frame(formatContext, &packet) >= 0)
+        while(av_read_frame(videoFormatContext, &packet) >= 0)
         {
             // Check if the packet belongs to a stream we are interested in.
             // That is whether we are dealing with video stream or audio stream 
             // or both, otherwise skip that packet.
-            if(formatContext->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO)
+            if(videoFormatContext->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO)
             {
+                
+                // Each stream has a corresponding AVCodec
+                // Each AVCodec has a corresponding AVCodecContext
+                
+                // We first need to find a decoder for a specific stream,
+                AVCodec* videoDecoder = avcodec_find_decoder(videoFormatContext->streams[i]->codecpar->codec_id);
+                if(!videoDecoder)
+                {
+                    std::cout << "Failed to find video decoder" << std::endl;
+                    exit(1);
+                }
+
+                // Then allocate a codec context for that decoder.
+                AVCodecContext* videoCodecContext = avcodec_alloc_context3(videoDecoder);
+                if(!videoDecoder)
+                {
+                    std::cout << "Failed to allocate the codec context" << std::endl;
+                    exit(1);
+                }
+
+                // TODO: is codec within a stream?
+                // Copy codec parameters from input stream to output codec context
+                if(avcodec_parameters_to_context(videoCodecContext, videoFormatContext->streams[i]->codecpar) < 0)
+                {
+                    std::cout << "Failed to copy codec parameters from intput stream to output codec context" << std::endl;
+                    exit(1);
+                }
+                
+                // Init the decoder
+                if(avcodec_open2(videoCodecContext, videoDecoder, nullptr) < 0)
+                {
+                    std::cout << "Failed to init decoder" << std::endl;
+                    exit(1);
+                }
+
                 // Submit the packet to the decoder
                 int sendPacketResult = avcodec_send_packet(videoCodecContext, &packet);
 
@@ -208,10 +241,7 @@ TEST(videoTest, ffmpegMuxingDemuxingTest)
 
                     // Allocate Pixel 
                     enum AVPixelFormat pixelFormat;
-                    int width, height;
-
-                    // TODO: set pixel info
-
+                    
                     // Copy/Write decoded video frame to destination output file's buffer:
                     // this is required since rawvideo expects non aligned data
                     av_image_copy(
@@ -219,16 +249,16 @@ TEST(videoTest, ffmpegMuxingDemuxingTest)
                         videoDestinationLinesize,
                         (const uint8_t**)(frame.data),
                         frame.linesize,
-                        pixelFormat,
-                        width,
-                        height
+                        videoCodecContext->pix_fmt,
+                        frame.width,
+                        frame.height
                     );
 
                     // TODO: wirte to video output file
                 }
 
             }
-            else if(formatContext->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO)
+            else if(videoFormatContext->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO)
             {
                 
             }
