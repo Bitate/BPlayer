@@ -164,8 +164,43 @@ TEST(videoTest, ffmpegMuxingDemuxingTest)
         abort();
     }    
 
+    // Loop each stream
     for(int i = 0; i < videoFormatContext->nb_streams; ++i)
     {
+        // Each stream has a corresponding AVCodec
+        // Each AVCodec has a corresponding AVCodecContext
+        
+        // We first need to find a decoder for a specific stream,
+        AVCodec* videoDecoder = avcodec_find_decoder(videoFormatContext->streams[i]->codecpar->codec_id);
+        if(!videoDecoder)
+        {
+            std::cout << "Failed to find video decoder" << std::endl;
+            exit(1);
+        }
+
+        // Then allocate a codec context for that decoder.
+        AVCodecContext* videoCodecContext = avcodec_alloc_context3(videoDecoder);
+        if(!videoCodecContext)
+        {
+            std::cout << "Failed to allocate the codec context" << std::endl;
+            exit(1);
+        }
+
+        // TODO: is codec within a stream?
+        // Copy codec parameters from input stream to output codec context
+        if(avcodec_parameters_to_context(videoCodecContext, videoFormatContext->streams[i]->codecpar) < 0)
+        {
+            std::cout << "Failed to copy codec parameters from intput stream to output codec context" << std::endl;
+            exit(1);
+        }
+        
+        // Init the decoder
+        if(avcodec_open2(videoCodecContext, videoDecoder, nullptr) < 0)
+        {
+            std::cout << "Failed to init decoder" << std::endl;
+            exit(1);
+        }
+
         // Initialize packet, set data to null and let the demuxer fill it.
         AVPacket packet;
         av_init_packet(&packet);
@@ -180,42 +215,8 @@ TEST(videoTest, ffmpegMuxingDemuxingTest)
             // or both, otherwise skip that packet.
             if(videoFormatContext->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO)
             {
-                
-                // Each stream has a corresponding AVCodec
-                // Each AVCodec has a corresponding AVCodecContext
-                
-                // We first need to find a decoder for a specific stream,
-                AVCodec* videoDecoder = avcodec_find_decoder(videoFormatContext->streams[i]->codecpar->codec_id);
-                if(!videoDecoder)
-                {
-                    std::cout << "Failed to find video decoder" << std::endl;
-                    exit(1);
-                }
-
-                // Then allocate a codec context for that decoder.
-                AVCodecContext* videoCodecContext = avcodec_alloc_context3(videoDecoder);
-                if(!videoDecoder)
-                {
-                    std::cout << "Failed to allocate the codec context" << std::endl;
-                    exit(1);
-                }
-
-                // TODO: is codec within a stream?
-                // Copy codec parameters from input stream to output codec context
-                if(avcodec_parameters_to_context(videoCodecContext, videoFormatContext->streams[i]->codecpar) < 0)
-                {
-                    std::cout << "Failed to copy codec parameters from intput stream to output codec context" << std::endl;
-                    exit(1);
-                }
-                
-                // Init the decoder
-                if(avcodec_open2(videoCodecContext, videoDecoder, nullptr) < 0)
-                {
-                    std::cout << "Failed to init decoder" << std::endl;
-                    exit(1);
-                }
-
                 // Submit the packet to the decoder
+                // TODO: Error in this function
                 int sendPacketResult = avcodec_send_packet(videoCodecContext, &packet);
 
                 if(sendPacketResult < 0)
@@ -226,8 +227,14 @@ TEST(videoTest, ffmpegMuxingDemuxingTest)
                 // Get all the available frames from the decoder
                 while(sendPacketResult >= 0)
                 {
-                    AVFrame frame;
-                    sendPacketResult = avcodec_receive_frame(videoCodecContext, &frame);
+                    AVFrame* frame = av_frame_alloc();
+
+                    // Retrieve/receive frame from decoder.
+                    // Note: before you call avcodec_receive_frame(), 
+                    // you must allocate memory for a frame
+                    // by calling function av_frame_alloc().
+                    sendPacketResult = avcodec_receive_frame(videoCodecContext, frame);
+                    
                     
                     if( sendPacketResult < 0 
                         && (sendPacketResult != AVERROR_EOF || sendPacketResult != AVERROR(EAGAIN)) )
@@ -235,7 +242,8 @@ TEST(videoTest, ffmpegMuxingDemuxingTest)
                         std::cout << "Error during decoding" << std::endl;
                     }
                     
-                    // Allocate image where the decoded image will be put
+                    // Write the frame data to output file
+                    // Allocate image where the decoded image/frame will be put
                     uint8_t* videoDestinationData[4] = { nullptr };
                     int videoDestinationLinesize[4];
 
@@ -247,11 +255,11 @@ TEST(videoTest, ffmpegMuxingDemuxingTest)
                     av_image_copy(
                         videoDestinationData,
                         videoDestinationLinesize,
-                        (const uint8_t**)(frame.data),
-                        frame.linesize,
+                        (const uint8_t**)(frame->data),
+                        frame->linesize,
                         videoCodecContext->pix_fmt,
-                        frame.width,
-                        frame.height
+                        frame->width,
+                        frame->height
                     );
 
                     // TODO: wirte to video output file
